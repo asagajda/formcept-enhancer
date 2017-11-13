@@ -1,5 +1,5 @@
 /*
- * Copyright 2012, FORMCEPT [http://www.formcept.com]
+ *  Copyright 2017, MEXSY
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.formcept.engine.enhancer;
+package com.mexsy.engine.enhancer;
 
 import static org.apache.stanbol.enhancer.servicesapi.rdf.Properties.ENHANCER_ENTITY_LABEL;
 
@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
 
-import org.apache.clerezza.rdf.core.MGraph;
-import org.apache.clerezza.rdf.core.UriRef;
-import org.apache.clerezza.rdf.core.impl.PlainLiteralImpl;
-import org.apache.clerezza.rdf.core.impl.TripleImpl;
+import org.apache.clerezza.commons.rdf.Graph;
+import org.apache.clerezza.commons.rdf.IRI;
+import org.apache.clerezza.commons.rdf.impl.utils.TripleImpl;
+import org.apache.clerezza.commons.rdf.impl.utils.PlainLiteralImpl;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -52,20 +52,20 @@ import org.slf4j.LoggerFactory;
 @Component(immediate = true, metatype = true)
 @Service
 @Properties(value={
-    @Property(name=EnhancementEngine.PROPERTY_NAME,value="formcept-disambiguator")
+    @Property(name=EnhancementEngine.PROPERTY_NAME,value="docstruct-enhancer")
 })
-public class FCDEnhancer extends AbstractEnhancementEngine<IOException,RuntimeException>
+public class DocstructEnhancer extends AbstractEnhancementEngine<IOException,RuntimeException>
     implements EnhancementEngine, ServiceProperties {
     
-    private static Logger LOG = LoggerFactory.getLogger(FCDEnhancer.class);
+    private static Logger LOG = LoggerFactory.getLogger(DocstructEnhancer.class);
     
-    @Property(value = "https://www.formcept.com/analyze")
-    public static final String FORMCEPT_SERVICE_URL = "org.formcept.engine.enhancer.url";
+    @Property(value = "test")
+    public static final String INPUT_PROPERTY = "com.mexsy.engine.enhancer.inputprop";
     
     /**
-     * Service URL
+     * InputProp
      */
-    private String serviceURL;
+    private String inputProp;
 
     /**
      * The default value for the Execution of this Engine. Currently set to
@@ -100,11 +100,11 @@ public class FCDEnhancer extends AbstractEnhancementEngine<IOException,RuntimeEx
         //ci.getLock().writeLock().lock();
         try {
             // get the metadata graph
-            MGraph metadata = ci.getMetadata();
+            Graph metadata = ci.getMetadata();
             // update some sample data
-            UriRef textAnnotation = EnhancementEngineHelper.createTextEnhancement(ci, this);
-            metadata.add(new TripleImpl(textAnnotation, ENHANCER_ENTITY_LABEL, new PlainLiteralImpl("FORMCEPT")));
-            LOG.info("FORMCEPT: Enhancement Succeeded");
+            //IRI textAnnotation = EnhancementEngineHelper.createTextEnhancement(ci, this);
+            //metadata.add(new TripleImpl(textAnnotation, ENHANCER_ENTITY_LABEL, new PlainLiteralImpl("MEXSY-DOCSTRUCT")));
+            LOG.info("MEXSY DOCSTRUCT: Enhancement Succeeded");
         } finally {
             //ci.getLock().writeLock().unlock();
         }
@@ -125,8 +125,8 @@ public class FCDEnhancer extends AbstractEnhancementEngine<IOException,RuntimeEx
         @SuppressWarnings("unchecked")
         Dictionary<String, Object> properties = ce.getProperties();
         // update the service URL if it is defined
-        if(properties.get(FORMCEPT_SERVICE_URL) != null){
-            this.serviceURL = (String) properties.get(FORMCEPT_SERVICE_URL);
+        if(properties.get(INPUT_PROPERTY) != null){
+            this.inputProp = (String) properties.get(INPUT_PROPERTY);
         }
     }
     
@@ -144,7 +144,7 @@ public class FCDEnhancer extends AbstractEnhancementEngine<IOException,RuntimeEx
      * @return
      */
     public String getServiceURL() {
-        return serviceURL;
+        return inputProp;
     }
             
 }
